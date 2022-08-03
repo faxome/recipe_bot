@@ -8,13 +8,13 @@ from werkzeug.utils import secure_filename
 import os
 from wtforms.validators import InputRequired
 
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = 'my_super_secret_CODE_eveR'
 app.config['UPLOAD_FOLDER'] = 'static/files'
+
 
 # class User(db.Model, UserMixin):
 #     id = db.Column(db.Integer, primary_key=True)
