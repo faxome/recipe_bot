@@ -41,16 +41,6 @@ def index():
     return render_template('dashboard.html')
 
 
-@app.route('/r', methods=['GET', 'POST'])
-def r():
-    random_recipes = Recipes.query.filter_by(type='lunch').all()
-    i_len = len(random_recipes)
-    random_id = int(random.uniform(0, i_len))
-    ccc = random_id
-    print(ccc)
-    return 'ok'
-
-
 @app.route('/add_recipe', methods=['GET', 'POST'])
 def add_recipe():
     form = UploadFileForm()
