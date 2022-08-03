@@ -26,7 +26,7 @@ def func(message):
         recipe_count_b = len(random_recipes_b)
         random_b_id = int(random.uniform(0, recipe_count_b))
         mess = f'{random_recipes_b[random_b_id].name}\n\n{random_recipes_b[random_b_id].description}'
-        bot.send_photo(message.chat.id, photo=open('../static/files/' + random_recipes_b[random_b_id].image_name, 'rb'))
+        bot.send_photo(message.chat.id, photo=open('./static/files/' + random_recipes_b[random_b_id].image_name, 'rb'))
         bot.send_message(message.chat.id, mess, parse_mode='html')
 
     elif (message.text == "🍝 Обеды"):
@@ -34,7 +34,7 @@ def func(message):
         recipe_count_l = len(random_recipes_l)
         random_l_id = int(random.uniform(0, recipe_count_l))
         mess = f'{random_recipes_l[random_l_id].name}\n\n{random_recipes_l[random_l_id].description}'
-        bot.send_photo(message.chat.id, photo=open('../static/files/' + random_recipes_l[random_l_id].image_name, 'rb'))
+        bot.send_photo(message.chat.id, photo=open('./static/files/' + random_recipes_l[random_l_id].image_name, 'rb'))
         bot.send_message(message.chat.id, mess, parse_mode='html')
 
     elif (message.text == "🍽 Ужины"):
@@ -42,7 +42,7 @@ def func(message):
         recipe_count_d = len(random_recipes_d)
         random_d_id = int(random.uniform(0, recipe_count_d))
         mess = f'{random_recipes_d[random_d_id].name}\n\n{random_recipes_d[random_d_id].description}'
-        bot.send_photo(message.chat.id, photo=open('../static/files/' + random_recipes_d[random_d_id].image_name, 'rb'))
+        bot.send_photo(message.chat.id, photo=open('./static/files/' + random_recipes_d[random_d_id].image_name, 'rb'))
         bot.send_message(message.chat.id, mess, parse_mode='html')
 
     elif (message.text == "🥩 У меня есть!"):
@@ -55,7 +55,7 @@ def func(message):
 
         if recipe_count_i != 0:
             mess = f'{random_recipes_i[random_i_id].name}\n\n{random_recipes_i[random_i_id].description}'
-            bot.send_photo(message.chat.id, photo=open('../static/files/' + random_recipes_i[random_i_id].image_name, 'rb'))
+            bot.send_photo(message.chat.id, photo=open('./static/files/' + random_recipes_i[random_i_id].image_name, 'rb'))
             bot.send_message(message.chat.id, mess, parse_mode='html')
         else:
             bot.send_message(message.chat.id, text="Нет рецепта с такими продуктами")
