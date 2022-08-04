@@ -1,12 +1,13 @@
+import os
+import random
 from flask import Flask, render_template, request, redirect, flash, url_for
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import FileField, SubmitField
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user
-from wtforms.validators import InputRequired
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-import random, os
+from wtforms import FileField, SubmitField
+from wtforms.validators import InputRequired
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -45,7 +46,9 @@ def load_user(user_id):
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
-    return render_template('dashboard.html')
+    info = Recipes.query.all()
+    info_count = len(info)
+    return render_template('dashboard.html', info_count=info_count)
 
 
 @app.route('/add_recipe', methods=['GET', 'POST'])
@@ -67,7 +70,7 @@ def add_recipe():
                          ingredient=recipe_ingredient, image_name=recipe_image)
         db.session.add(recipe)
         db.session.commit()
-        return "ok"
+        return redirect(url_for('success'))
     return render_template('add_recipe.html', form=form)
 
 
@@ -94,6 +97,7 @@ def login_page():
 
 
 @app.route('/register-new-user', methods=['GET', 'POST'])
+@login_required
 def register():
     login = request.form.get('login')
     password = request.form.get('password')
@@ -128,6 +132,12 @@ def redirect_to_signin(response):
         return redirect(url_for('login_page') + '?next=' + request.url)
 
     return response
+
+
+@app.route('/success')
+@login_required
+def success():
+    return render_template('success.html')
 
 
 if __name__ == "__main__":
