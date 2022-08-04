@@ -1,12 +1,12 @@
-import random
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from werkzeug.security import generate_password_hash
 from wtforms import FileField, SubmitField
-from werkzeug.utils import secure_filename
-import os
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user
 from wtforms.validators import InputRequired
+from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+import random, os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -14,12 +14,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = 'my_super_secret_CODE_eveR'
 app.config['UPLOAD_FOLDER'] = 'static/files'
+manager = LoginManager(app)
 
 
-# class User(db.Model, UserMixin):
-#     id = db.Column(db.Integer, primary_key=True)
-#     login = db.Column(db.String(128), nullable=False, unique=True)
-#     password = db.Column(db.String(255), nullable=False)
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    login = db.Column(db.String(128), nullable=False, unique=True)
+    password = db.Column(db.String(255), nullable=False)
 
 
 class UploadFileForm(FlaskForm):
@@ -36,12 +37,19 @@ class Recipes(db.Model):
     image_name = db.Column(db.String(50), nullable=False)
 
 
+@manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
+
 @app.route('/', methods=['GET', 'POST'])
+@login_required
 def index():
     return render_template('dashboard.html')
 
 
 @app.route('/add_recipe', methods=['GET', 'POST'])
+@login_required
 def add_recipe():
     form = UploadFileForm()
     if form.validate_on_submit():
@@ -61,6 +69,65 @@ def add_recipe():
         db.session.commit()
         return "ok"
     return render_template('add_recipe.html', form=form)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login_page():
+    login = request.form.get('login')
+    password = request.form.get('password')
+
+    if login and password:
+        user = User.query.filter_by(login=login).first()
+
+        if user and check_password_hash(user.password, password):
+            login_user(user)
+
+            next_page = request.args.get('next')
+
+            return redirect(next_page)
+        else:
+            flash('Login or password is not correct')
+    else:
+        flash('Please fill login and password fields')
+
+    return render_template('login.html')
+
+
+@app.route('/register-new-user', methods=['GET', 'POST'])
+def register():
+    login = request.form.get('login')
+    password = request.form.get('password')
+    password2 = request.form.get('password2')
+
+    if request.method == 'POST':
+        if not (login or password or password2):
+            flash('Please, fill all fields!')
+        elif password != password2:
+            flash('Passwords are not equal!')
+        else:
+            hash_pwd = generate_password_hash(password)
+            new_user = User(login=login, password=hash_pwd)
+            db.session.add(new_user)
+            db.session.commit()
+
+            return redirect(url_for('login_page'))
+
+    return render_template('register.html')
+
+
+@app.route('/logout', methods=['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+
+@app.after_request
+def redirect_to_signin(response):
+    if response.status_code == 401:
+        return redirect(url_for('login_page') + '?next=' + request.url)
+
+    return response
 
 
 if __name__ == "__main__":

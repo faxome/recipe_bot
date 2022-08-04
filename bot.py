@@ -1,7 +1,7 @@
 import telebot
 import random
 from telebot import types
-from app import db, Recipes
+from app import Recipes
 
 bot = telebot.TeleBot('5566497434:AAExeWLSda5SL5iFLbOzZTVDKD2sgd2fBRA')
 
@@ -55,7 +55,8 @@ def func(message):
 
         if recipe_count_i != 0:
             mess = f'{random_recipes_i[random_i_id].name}\n\n{random_recipes_i[random_i_id].description}'
-            bot.send_photo(message.chat.id, photo=open('../static/files/' + random_recipes_i[random_i_id].image_name, 'rb'))
+            bot.send_photo(message.chat.id,
+                           photo=open('../static/files/' + random_recipes_i[random_i_id].image_name, 'rb'))
             bot.send_message(message.chat.id, mess, parse_mode='html')
         else:
             bot.send_message(message.chat.id, text="Нет рецепта с такими продуктами")
