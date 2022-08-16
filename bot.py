@@ -30,7 +30,6 @@ def start(message):
 
 @bot.message_handler(content_types=['text', 'video'])
 def func(message):
-    lora_bot.user(USER_ID)
     if (message.text == "🍳 Завтраки"):
         random_recipes_b = Recipes.query.filter_by(type='breakfast').all()
         recipe_count_b = len(random_recipes_b)
