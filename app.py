@@ -46,9 +46,19 @@ def load_user(user_id):
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
-    info = Recipes.query.all()
-    info_count = len(info)
-    return render_template('dashboard.html', info_count=info_count)
+    all_recipe = Recipes.query.all()
+    info_count = len(all_recipe)
+    all_breakfasts = Recipes.query.filter_by(type='breakfast').all()
+    breakfasts_count = len(all_breakfasts)
+    all_lunches = Recipes.query.filter_by(type='lunch').all()
+    lunches_count = len(all_lunches)
+    all_desserts = Recipes.query.filter_by(type='dessert').all()
+    desserts_count = len(all_desserts)
+    all_grills = Recipes.query.filter_by(type='grill').all()
+    grills_count = len(all_grills)
+
+    return render_template('dashboard.html', info_count=info_count, breakfasts_count=breakfasts_count,
+                           lunches_count=lunches_count, desserts_count=desserts_count, grills_count=grills_count)
 
 
 @app.route('/add_recipe', methods=['GET', 'POST'])
