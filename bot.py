@@ -1,13 +1,19 @@
 import telebot
 import random
+import calendar
 from telebot import types
-from app import Recipes
+from app import Recipes, Stats, db
+from datetime import datetime
 
 bot = telebot.TeleBot('5597091100:AAEMDOfQgjTna9l6sXSVOTNTk_xfVBXAmdo')
 
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    get_user_id = message.from_user.id
+    stats = Stats(user_id=get_user_id)
+    db.session.add(stats)
+    db.session.commit()
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     btn1 = types.KeyboardButton("🍳 Завтраки")
     btn2 = types.KeyboardButton("🍝 Вторые блюда")
@@ -26,6 +32,10 @@ def start(message):
 
 @bot.message_handler(content_types=['text', 'video'])
 def func(message):
+    get_user_id = message.from_user.id
+    stats = Stats(user_id=get_user_id)
+    db.session.add(stats)
+    db.session.commit()
     if (message.text == "🍳 Завтраки"):
         random_recipes_b = Recipes.query.filter_by(type='breakfast').all()
         recipe_count_b = len(random_recipes_b)
@@ -61,11 +71,26 @@ def func(message):
     elif (message.text == "🥦 У меня есть!"):
         mess = bot.send_message(message.chat.id, 'Введите название продукта')
         bot.register_next_step_handler(mess, ihave)
+
+    elif (message.text == "give_me_stats"):
+        today = datetime.today()
+        month_days = calendar.monthrange(today.year, today.month)
+        get_users = Stats.query.filter_by(date=today.date()).all()
+        users_list = []
+        for item in get_users:
+            if item.user_id not in users_list:
+                users_list.append(item.user_id)
+        mess = f'Уникальных пользователей сегодня: {len(users_list)}'
+        bot.send_message(message.chat.id, mess, parse_mode='html')
     else:
         bot.send_message(message.chat.id, text="Выберите тип рецепта")
 
 
 def ihave(message):
+    get_user_id = message.from_user.id
+    stats = Stats(user_id=get_user_id)
+    db.session.add(stats)
+    db.session.commit()
     f_ingredient = message.text.lower()
     random_recipes_i = Recipes.query.filter_by(ingredient=f_ingredient).all()
     recipe_count_i = len(random_recipes_i)

@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from wtforms import FileField, SubmitField
 from wtforms.validators import InputRequired
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -36,6 +37,12 @@ class Recipes(db.Model):
     type = db.Column(db.String(20), nullable=False)
     ingredient = db.Column(db.String(20), nullable=False)
     image_name = db.Column(db.String(50), nullable=False)
+
+
+class Stats(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=True)
+    date = db.Column(db.DATE, default=datetime.today().date())
 
 
 @manager.user_loader
