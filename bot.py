@@ -16,7 +16,7 @@ def start(message):
     db.session.commit()
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     btn1 = types.KeyboardButton("🍳 Завтраки")
-    btn2 = types.KeyboardButton("🍝 Вторые блюда")
+    btn2 = types.KeyboardButton("🍝 Основные блюда")
     btn3 = types.KeyboardButton("🍰 Десерты")
     btn4 = types.KeyboardButton("🥩 Мангал")
     btn5 = types.KeyboardButton("🥦 У меня есть!")
@@ -44,7 +44,7 @@ def func(message):
         bot.send_video(message.chat.id, video=open('/app/static/files/' + random_recipes_b[random_b_id].image_name, 'rb'), width=720, height=1280)
         bot.send_message(message.chat.id, mess, parse_mode='html')
 
-    elif (message.text == "🍝 Вторые блюда"):
+    elif (message.text == "🍝 Основные блюда"):
         random_recipes_l = Recipes.query.filter_by(type='lunch').all()
         recipe_count_l = len(random_recipes_l)
         random_l_id = int(random.uniform(0, recipe_count_l))
